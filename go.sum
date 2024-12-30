@@ -1,5 +1,9 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/gopherjs/gopherjs v0.0.0-20180708170036-38b413be4187 h1:PG00P7q1LsUxYg7b5eg85/sx235tx3Wq+H0cKxD/Hkg=
+github.com/gopherjs/gopherjs v0.0.0-20180708170036-38b413be4187/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
+github.com/goplus/reflectx v1.2.2 h1:T1p20OIH/HcnAvQQNnDLwl6AZOjU34icsfc6migD6L8=
+github.com/goplus/reflectx v1.2.2/go.mod h1:wHOS9ilbB4zrecI0W1dMmkW9JMcpXV7VjALVbNU9xfM=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/objx v0.5.2 h1:xuMeJ0Sdp5ZMRXx/aWO6RZxdr3beISkG5/G/aIRr3pY=

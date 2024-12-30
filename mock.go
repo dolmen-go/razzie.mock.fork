@@ -3,51 +3,40 @@ package mock
 import (
 	"reflect"
 
+	"github.com/goplus/reflectx"
 	"github.com/stretchr/testify/mock"
 )
 
 func Mock[T any]() (T, *mock.Mock) {
-	/*_, methods := getInterfaceTypeAndMethods[T]()
-	fields := make([]reflect.StructField, 0, len(methods))
-	for _, method := range methods {
-		fields = append(fields, reflect.StructField{
-			Name:    method.Name,
-			PkgPath: method.PkgPath,
-			Type:    method.Type,
-		})
-	}
-	mTyp := reflect.StructOf(fields)
-	t := reflect.New(mTyp).Elem()
-	m := new(mock.Mock)
-	for i, method := range methods {
-		impl := func(in []reflect.Value) []reflect.Value {
-			in = in[1:] // ignore receiver
-			out := m.MethodCalled(method.Name, reflectValuesToInterfaces(in)...)
-			return interfacesToReflectValues(out)
-		}
-		t.Field(i).Set(reflect.MakeFunc(method.Type, impl))
-	}
-	return t.Addr().Interface().(T), m*/
-
-	typ, methods := getInterfaceTypeAndMethods[T]()
-	mTyp := reflect.StructOf([]reflect.StructField{
+	_, methods := getInterfaceTypeAndMethods[T]()
+	mockTyp := reflect.StructOf([]reflect.StructField{
 		{
-			Name:      typ.Name(),
-			Type:      typ,
+			Name:      "Mock",
+			Type:      reflect.TypeFor[mock.Mock](),
 			Anonymous: true,
 		},
 	})
-	t := reflect.New(mTyp).Elem()
-	m := new(mock.Mock)
+	mockMethodSet := reflectx.NewMethodSet(mockTyp, 0, len(methods))
+	mockMethods := make([]reflectx.Method, 0, len(methods))
 	for _, method := range methods {
 		impl := func(in []reflect.Value) []reflect.Value {
-			in = in[1:] // ignore receiver
+			m := in[0].Elem().FieldByName("Mock").Addr().Interface().(*mock.Mock)
+			in = in[1:] // skip receiver
 			out := m.MethodCalled(method.Name, reflectValuesToInterfaces(in)...)
 			return interfacesToReflectValues(out)
 		}
-		t.MethodByName(method.Name).Set(reflect.MakeFunc(method.Type, impl))
+		mockMethods = append(mockMethods, reflectx.Method{
+			Name:    method.Name,
+			PkgPath: method.PkgPath,
+			Pointer: true,
+			Type:    method.Type,
+			Func:    impl,
+		})
 	}
-	return t.Addr().Interface().(T), m
+	reflectx.SetMethodSet(mockMethodSet, mockMethods, false)
+
+	t := reflect.New(mockMethodSet)
+	return t.Interface().(T), t.Elem().FieldByName("Mock").Addr().Interface().(*mock.Mock)
 }
 
 func getInterfaceTypeAndMethods[T any]() (reflect.Type, []reflect.Method) {
