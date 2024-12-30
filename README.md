@@ -1,15 +1,16 @@
 ```go
-package main
-
-import "github.com/razzie/mock"
+import (
+	"testing"
+	"github.com/razzie/mock"
+)
 
 type Fooer interface {
 	Foo()
 }
 
-func main() {
+func TestFooer(t *testing.T) {
 	f, m := mock.Mock[Fooer]()
-	m.On("Foo").Once().Return()
+	m.On("Foo").Return()
 	f.Foo()
 	m.AssertCalled(t, "Foo")
 }
