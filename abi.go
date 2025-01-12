@@ -3,8 +3,6 @@ package mock
 import (
 	"reflect"
 	"unsafe"
-
-	"golang.org/x/exp/constraints"
 )
 
 //go:linkname addReflectOff reflect.addReflectOff
@@ -92,11 +90,7 @@ func getAbiMethods(typ reflect.Type) []abiMethod {
 		return nil
 	}
 	m := unsafe.Add(unsafe.Pointer(u), u.Moff)
-	return ptrToSlice[abiMethod](m, u.Mcount)
-}
-
-func ptrToSlice[T any, N constraints.Integer](ptr unsafe.Pointer, len N) []T {
-	return unsafe.Slice((*T)(ptr), len)
+	return unsafe.Slice((*abiMethod)(m), u.Mcount)
 }
 
 // abiStep represents an ABI "instruction." Each instruction
