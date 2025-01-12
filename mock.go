@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var Anything = mock.Anything
+
 func Mock[T any]() (T, *mock.Mock) {
 	typ, methods := getInterfaceTypeAndMethods[T]()
 	mockTyp := reflect.StructOf([]reflect.StructField{
