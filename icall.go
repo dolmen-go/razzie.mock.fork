@@ -44,7 +44,7 @@ func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs [
 		var v reflect.Value
 		steps := info.abiDesc.call.stepsForValue(i + 1) // skip receiver
 		if st := steps[0]; st.kind == abiStepStack {
-			if toAbiType(typ).IfaceIndir() {
+			if toAbiType(typ).ifaceIndir() {
 				// value cannot be inlined in interface data.
 				// Must make a copy, because f might keep a reference to it,
 				// and we cannot let f keep a reference to the stack frame
@@ -56,7 +56,7 @@ func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs [
 				v = reflect.NewAt(typ, *(*unsafe.Pointer)(unsafe.Add(ptr, st.stkOff))).Elem()
 			}
 		} else {
-			if toAbiType(typ).IfaceIndir() {
+			if toAbiType(typ).ifaceIndir() {
 				// All that's left is values passed in registers that we need to
 				// create space for the values.
 				vptr := unsafe_New(typ)
@@ -126,7 +126,7 @@ func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs [
 			// for this call is not adequately zeroed, and we
 			// are careful to keep the arguments alive until we
 			// return to makeFuncStub's caller.
-			if toAbiType(typ).IfaceIndir() {
+			if toAbiType(typ).ifaceIndir() {
 				memmove(addr, vptr, st.size)
 			} else {
 				*(*unsafe.Pointer)(addr) = vptr
@@ -136,7 +136,7 @@ func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs [
 				switch st.kind {
 				case abiStepIntReg, abiStepPointer:
 					// Copy values to "integer registers."
-					if toAbiType(typ).IfaceIndir() {
+					if toAbiType(typ).ifaceIndir() {
 						offset := unsafe.Add(vptr, st.offset)
 						regPtr := unsafe.Pointer(&returnIntRegs[st.ireg])
 						if bigEndian {
@@ -153,7 +153,7 @@ func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs [
 					}
 				case abiStepFloatReg:
 					// Copy values to "float registers."
-					if !toAbiType(typ).IfaceIndir() {
+					if !toAbiType(typ).ifaceIndir() {
 						panic("attempted to copy pointer to FP register")
 					}
 					offset := unsafe.Add(vptr, st.offset)

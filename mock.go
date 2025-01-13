@@ -32,7 +32,7 @@ func Mock[T any]() (T, *mock.Mock) {
 	abiMethods := getAbiMethods(mockTyp)
 	for i, method := range methods {
 		methodInfos[i] = newMethodInfo(mockTyp, method)
-		abiMethods[i].SetFn(icall_array[i])
+		abiMethods[i].setFn(icall_array[i])
 	}
 
 	t := reflect.New(mockTyp).Elem()

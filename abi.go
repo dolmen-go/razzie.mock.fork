@@ -12,10 +12,8 @@ const (
 	// PtrSize is the size of a pointer in bytes - unsafe.Sizeof(uintptr(0)) but as an ideal constant.
 	// It is also the size of the machine's native word size (that is, 4 on 32-bit systems, 8 on 64-bit).
 	ptrSize = 4 << (^uintptr(0) >> 63)
-)
 
-const (
-	KindDirectIface uint8 = 1 << 5
+	kindDirectIface uint8 = 1 << 5
 )
 
 type abiType struct {
@@ -41,12 +39,12 @@ func toAbiType(typ reflect.Type) *abiType {
 	return (*abiType)(t)
 }
 
-func (t *abiType) Pointers() bool {
+func (t *abiType) pointers() bool {
 	return t.PtrBytes != 0
 }
 
-func (t *abiType) IfaceIndir() bool {
-	return t.Kind_&KindDirectIface == 0
+func (t *abiType) ifaceIndir() bool {
+	return t.Kind_&kindDirectIface == 0
 }
 
 type abiMethod struct {
@@ -56,7 +54,7 @@ type abiMethod struct {
 	Tfn  int32 // fn used for normal method call
 }
 
-func (m *abiMethod) SetFn(fn any) {
+func (m *abiMethod) setFn(fn any) {
 	off := addReflectOff(unsafe.Pointer(reflect.ValueOf(fn).Pointer()))
 	//m.Tfn = off
 	m.Ifn = off
@@ -218,7 +216,7 @@ func (a *abiSeq) addRcvr(rcvr reflect.Type) (*abiStep, bool) {
 	a.valueStart = append(a.valueStart, len(a.steps))
 	var ok, ptr bool
 	rcvr_ := toAbiType(rcvr)
-	if rcvr_.IfaceIndir() || rcvr_.Pointers() {
+	if rcvr_.ifaceIndir() || rcvr_.pointers() {
 		ok = a.assignIntN(0, ptrSize, 1, 0b1)
 		ptr = true
 	} else {
@@ -452,7 +450,7 @@ func newAbiDesc(t reflect.Type, rcvr reflect.Type) abiDesc {
 			spill += arg.Size()
 			for _, st := range in.stepsForValue(i) {
 				if st.kind == abiStepPointer {
-					inRegPtrs.Set(st.ireg)
+					inRegPtrs.set(st.ireg)
 				}
 			}
 		}
@@ -484,7 +482,7 @@ func newAbiDesc(t reflect.Type, rcvr reflect.Type) abiDesc {
 		} else {
 			for _, st := range out.stepsForValue(i) {
 				if st.kind == abiStepPointer {
-					outRegPtrs.Set(st.ireg)
+					outRegPtrs.set(st.ireg)
 				}
 			}
 		}
@@ -522,7 +520,7 @@ func (bv *bitVector) append(bit uint8) {
 }
 
 func addTypeBits(bv *bitVector, offset uintptr, t reflect.Type) {
-	if !toAbiType(t).Pointers() {
+	if !toAbiType(t).pointers() {
 		return
 	}
 
@@ -561,17 +559,17 @@ func addTypeBits(bv *bitVector, offset uintptr, t reflect.Type) {
 // integer argument/return register.
 type intArgRegBitmap [(intArgRegs + 7) / 8]uint8
 
-// Set sets the i'th bit of the bitmap to 1.
-func (b *intArgRegBitmap) Set(i int) {
+// set sets the i'th bit of the bitmap to 1.
+func (b *intArgRegBitmap) set(i int) {
 	b[i/8] |= uint8(1) << (i % 8)
 }
 
-// Get returns whether the i'th bit of the bitmap is set.
+// get returns whether the i'th bit of the bitmap is set.
 //
 // nosplit because it's called in extremely sensitive contexts, like
 // on the reflectcall return path.
 //
 //go:nosplit
-func (b *intArgRegBitmap) Get(i int) bool {
+func (b *intArgRegBitmap) get(i int) bool {
 	return b[i/8]&(uint8(1)<<(i%8)) != 0
 }
