@@ -29,7 +29,7 @@ func newMethodInfo(typ reflect.Type, method reflect.Method) *methodInfo {
 	}
 }
 
-func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs []float64, frame unsafe.Pointer) (returnIntRegs [9]unsafe.Pointer, returnFloatRegs [15]float64) {
+func icall(index int, recv unsafe.Pointer, intRegs []unsafe.Pointer, floatRegs []float64, frame unsafe.Pointer) (returnIntRegs [intArgRegs]unsafe.Pointer, returnFloatRegs [floatArgRegs]float64) {
 	receiver := reflect.NewAt(reflect.TypeFor[icallBase](), recv).Elem()
 	info := receiver.Interface().(icallBase)[index]
 	receiver = reflect.NewAt(info.typ, recv).Elem()
