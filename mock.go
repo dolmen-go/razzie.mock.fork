@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var Anything = mock.Anything
+const Anything = mock.Anything
 
 func Mock[T any]() (T, *mock.Mock) {
 	typ, methods := getInterfaceTypeAndMethods[T]()
