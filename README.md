@@ -59,8 +59,10 @@ func TestSomething(t *testing.T) {
 ```
 
 Maybe it doesn't look like a big deal, but with many large interfaces the work adds up.
+Of course you could just run [mockery](https://github.com/vektra/mockery) to generate it,
+and if you don't mind occasionally running an extra tool to generate your mocks, then by all means go ahead and use it.
 
-With `github.com/razzie/mock` package, you can shortcut the work:
+With `github.com/razzie/mock` package though, you can shortcut the work:
 
 ```go
 import (
