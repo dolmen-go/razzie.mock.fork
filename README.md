@@ -52,7 +52,7 @@ func TestSomething(t *testing.T) {
 	adder := new(MockAdder)
 	adder.On("Add", mock.Anything, mock.Anything).Return(0)
 	something(adder)
-	adder.AssertCalled(t, "Add", mock.Anything, mock.Anything)
+	adder.AssertExpectations(t)
 }
 ```
 
@@ -69,9 +69,9 @@ import (
 )
 
 func TestSomething(t *testing.T) {
-	var adder, mck = mock.Mock[Adder]() // mck is a testify/mock.Mock object
+	var adder, mck = mock.Mock[Adder]() // mck is a testify mock.Mock object
 	mck.On("Add", mock.Anything, mock.Anything).Return(0)
 	something(adder)
-	mck.AssertCalled(t, "Add", mock.Anything, mock.Anything)
+	mck.AssertExpectations(t)
 }
 ```
