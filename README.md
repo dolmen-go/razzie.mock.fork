@@ -6,18 +6,16 @@ import (
 	"github.com/razzie/mock"
 )
 
-type Adder interface {
-	Add(a, b int) int
+type Fooer interface {
+	Foo() error
 }
 
 func TestSomething(t *testing.T) {
-	adder, mck := mock.Mock[Adder]() // <---
-	mck.On("Add", 1, 2).Return(3)
-	res := adder.Add(1, 2)
-	if res != 3 {
-		t.Errorf("expected 3, got %d", res)
-	}
-	mck.AssertCalled(t, "Add", 1, 2)
+	fooer, mck := mock.Mock[Fooer]() // <--- Mock generates a runtime mock implementation for Fooer
+	mck.On("Foo").Return(nil)
+	fooer.Foo()
+	something(fooer)
+	mck.AssertExpectations(t)
 }
 ```
 
