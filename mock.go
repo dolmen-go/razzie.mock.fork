@@ -6,8 +6,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// Anything is used when the argument being tested
+// shouldn't be taken into consideration.
 const Anything = mock.Anything
 
+// Mock takes a T interface type and returns a runtime generated mock implementation for it
+// plus a testify mock.Mock object to control its behavior
 func Mock[T any]() (T, *mock.Mock) {
 	typ, methods := getInterfaceTypeAndMethods[T]()
 	mockTyp := reflect.StructOf([]reflect.StructField{
