@@ -91,4 +91,18 @@ func TestMock(t *testing.T) {
 		assert.Equal(t, typ.Name(), typ_.Name())
 		m.AssertCalled(t, "UncommonArgs", uIn, &uIn)
 	})
+
+	t.Run("multiple instances", func(t *testing.T) {
+		type Fooer interface {
+			Foo() int
+		}
+		f1, m1 := Mock[Fooer]()
+		f2, m2 := Mock[Fooer]()
+		m1.On("Foo").Return(1)
+		m2.On("Foo").Return(2)
+		assert.Equal(t, 1, f1.Foo())
+		assert.Equal(t, 2, f2.Foo())
+		m1.AssertExpectations(t)
+		m2.AssertExpectations(t)
+	})
 }
