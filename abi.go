@@ -31,12 +31,8 @@ type abiType struct {
 }
 
 func toAbiType(typ reflect.Type) *abiType {
-	type iface struct {
-		typ  *abiType
-		word unsafe.Pointer
-	}
-	t := (*iface)(unsafe.Pointer(&typ)).word
-	return (*abiType)(t)
+	t := *(*[2]unsafe.Pointer)(unsafe.Pointer(&typ))
+	return (*abiType)(t[1])
 }
 
 func (t *abiType) pointers() bool {
