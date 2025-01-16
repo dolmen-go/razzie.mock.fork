@@ -33,9 +33,8 @@ func Mock[T any]() (T, *mock.Mock) {
 			Anonymous: true,
 		},
 	})
-	getMock := func(t reflect.Value) *mock.Mock {
-		return t.Field(1).Interface().(*mock.Mock)
-	}
+
+	m := new(mock.Mock)
 	methodInfos := make(icallBase, typ.NumMethod())
 	abiMethods := getAbiMethods(mockTyp)
 	for i := range methodInfos {
@@ -45,6 +44,6 @@ func Mock[T any]() (T, *mock.Mock) {
 
 	t := reflect.New(mockTyp).Elem()
 	t.Field(0).Set(reflect.ValueOf(methodInfos))
-	t.Field(1).Set(reflect.ValueOf(new(mock.Mock)))
-	return t.Interface().(T), getMock(t)
+	t.Field(1).Set(reflect.ValueOf(m))
+	return t.Interface().(T), m
 }
